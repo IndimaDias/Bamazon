@@ -47,6 +47,9 @@ function callMenu(){
             case "opt1":
                 getAllProducts();
                 break;
+            case "opt2" :
+                checkLowInventory();
+                break;
     
         }
 
@@ -67,24 +70,50 @@ function getAllProducts(){
         if(err) throw err;
         // console.log(results);
 
-        // create a table with column headings, and column width
-        var table = new Table({
-            head: ['ID', 'NAME','PRICE','QUANTITY']
-          , colWidths: [5,30,10,10]
-        });
+        
+       console.log("\n************************** Items for Sale **************************\n\n");
 
-        // push query results to the table 
-        for(var i=0;i<results.length;i++){
-            table.push([results[i].item_id,results[i].product_name,results[i].unit_price.toFixed(2),results[i].stock_quantity]);
-        }
-        console.log("\n************************** Items for Sale **************************\n\n");
+        // call function to print table with results 
+        listTable(results);
 
-        console.log(table.toString());        
-        console.log("\n\n");
+        // call function to display the menu
         callMenu();
         
     });             
 } // end getAllProducts
 
+// *******************************************function checkLowInventory********************************
 
+function checkLowInventory(){
+    var queryStocks = "SELECT * FROM products WHERE stock_quantity < 5";
+
+    connection.query(queryStocks,function(err,results){
+        if(err) throw err;
+
+        console.log("\n************************* Items with low Inventory *****************************");
+        listTable(results);
+        callMenu();
+    });
+}
+
+// *********************************************function listTable**************************************
+
+function listTable(dataSet){
+    // this function will create a table with the give array of data 
+
+    // create a table with column headings, and column width
+    var table = new Table({
+        head: ['ID', 'NAME','PRICE','QUANTITY']
+      , colWidths: [5,30,10,10]
+    });
+
+// // push query results to the table 
+    for(var i=0;i<dataSet.length;i++){
+        table.push([dataSet[i].item_id,dataSet[i].product_name,dataSet[i].unit_price.toFixed(2),dataSet[i].stock_quantity]);
+    }
+
+    // print the table with data
+    console.log(table.toString());        
+        console.log("\n\n");
+}
 start();
