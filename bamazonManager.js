@@ -34,8 +34,10 @@ function callMenu(){
                    name : "View Low Inventory"},
                   {value : "opt3",
                    name : "Add to Inventory"},
-                  {value : "opt2",
-                   name : "Add New Product"}],
+                  {value : "opt4",
+                   name : "Add New Product"},
+                  {value : "opt5",
+                   name : "Exit"}],
                    filter: function( val ) {
                     return val;
                   }
@@ -50,6 +52,14 @@ function callMenu(){
             case "opt2" :
                 checkLowInventory();
                 break;
+            case "opt3":
+                addToInventory();    
+                break;
+            case "opt4":
+                break;
+            case "opt5":
+                connection.end();
+                break;        
     
         }
 
@@ -116,4 +126,60 @@ function listTable(dataSet){
     console.log(table.toString());        
         console.log("\n\n");
 }
+
+// ***************************************function addToInventory*****************************************
+function addToInventory(){
+
+   
+
+    var item_id = 0;
+    
+    var updateQuery = "UPDATE products SET stock_quantity = ? WHERE item_id = ?";
+    
+    var unit_price = 0;
+    var stock_quantity = 0;
+    var noOfUnits = 0;
+    
+    
+
+    inquirer.prompt([{
+        type:"input",
+        name :"itemId",
+        message:"Please enter the id of the item"
+    },
+    {
+        type:"input",
+        name :"noOfUnits",
+        message:"Please enter the no of units"
+    }
+    ]).then(answer =>{
+        
+        item_id = answer.itemId;
+        var selectQuery = "SELECT stock_quantity FROM products WHERE item_id = " + item_id;  
+        
+               
+        connection.query(selectQuery,function(err, results){
+            if(err) throw err;
+            stock_quantity = results[0].stock_quantity + parseInt(answer.noOfUnits);
+
+
+            connection.query(updateQuery,[stock_quantity,item_id],
+                (err,results)=>{
+                    if (err) throw err;
+
+                    console.log("\nItem inventory updated\n\n");
+
+                   callMenu();
+                });
+        })
+
+
+                       
+
+        }
+            )
+
+}
+
+// ******************************************************************************************************
 start();
