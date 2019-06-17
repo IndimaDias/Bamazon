@@ -44,7 +44,7 @@ function callMenu(){
     };
 
     inquirer.prompt(optionList).then(answers=>{
-        console.log(answers.optionMenu);
+       
         switch (answers.optionMenu){
             case "opt1":
                 getAllProducts();
@@ -56,6 +56,7 @@ function callMenu(){
                 addToInventory();    
                 break;
             case "opt4":
+                addNewProduct();
                 break;
             case "opt5":
                 connection.end();
@@ -181,5 +182,47 @@ function addToInventory(){
 
 }
 
+// *********************************function addNewProduct***********************************************
+function addNewProduct(){
+    var question = [{
+                    type :"input",
+                    name :"productName",
+                    message : "Please enter the name of the product"
+                    },
+                    {
+                     type : "input",
+                     name : "department_name",
+                     message : "Please enter the department name"   
+                    },
+                    {
+                     type : "input",
+                     name : "unitPrice",
+                     message : "Plaease enter the item price"
+                    },
+                    {
+                     type : "input",
+                     name : "quantity",
+                     message : "Please enter the no of units available"   
+                    }
+    ];
+
+    inquirer.prompt(question)
+       .then(answer =>{
+
+         var product = {product_name : answer.productName,
+                        department_name : answer.department_name,
+                        unit_price : answer.unitPrice,
+                        stock_quantity : answer.quantity};
+
+         
+        connection.query("INSERT INTO products SET ?" , product, (err,res)=>{
+            if (err) throw err;
+
+            console.log("\nNew item added\n\n");
+
+            callMenu();
+        })                 
+    });
+}
 // ******************************************************************************************************
 start();
