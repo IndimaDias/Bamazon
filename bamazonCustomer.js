@@ -16,7 +16,7 @@ function start(){
         console.log("connected as id " + connection.threadId + "\n");
         getAllProducts();
         
-        connection.end();
+        // connection.end();
        
       });
 
@@ -55,13 +55,68 @@ function getAllProducts(){
 
 // ****************************************function prompt to order***************************************
 function getOrder(){
+
+    var item_id = 0;
+    
+    var updateQuery = "UPDATE products SET stock_quantity = ? WHERE item_id = ?";
+    var unit_price = 0;
+    var stock_quantity = 0;
+    var noOfUnits = 0;
+    
+
     inquire.prompt([{
         type:"input",
         name :"itemId",
         message:"Please enter the id of the item to purchase"
     }
     ]).then(answer =>{
-        console.log(answer.itemId);
+        
+
+        item_id=answer.itemId;
+        
+        var itemQuery = "SELECT stock_quantity,unit_price FROM products WHERE item_id = " + item_id;
+
+        connection.query(itemQuery,function(err,results){
+            if(err) throw err;
+
+            unit_price = results[0].unit_price;
+            stock_quantity = results[0].stock_quantity;
+
+            
+            if(stock_quantity === 0 ){   
+               
+                console.log("Insufficient quantity!");
+            }
+            else{
+                inquire.prompt([{
+                    type:"input",
+                    name :"noOfUnits",
+                    message:"Please enter the no of units"
+                }
+            ]).then(answer =>{
+                noOfUnits = parseInt(answer.noOfUnits);
+
+                if (noOfUnits > stock_quantity){
+                   
+                    console.log("Insufficient quantity!");
+                }
+
+                var totalCost = parseFloat(answer.noOfUnits * unit_price);
+                var newQuantity = stock_quantity - answer.noOfUnits
+                
+                connection.query(updateQuery,[newQuantity,item_id],
+                              (err,results)=>{
+                                  if (err) throw err;
+
+                                  console.log("Total cost :" + totalCost.toFixed(2));
+                              });
+
+            });
+            }
+
+        }
+            )
+
     });
 }
 
