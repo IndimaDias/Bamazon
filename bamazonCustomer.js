@@ -86,6 +86,8 @@ function getOrder(){
             if(stock_quantity === 0 ){   
                
                 console.log("Insufficient quantity!");
+                getAllProducts();
+
             }
             else{
                 inquire.prompt([{
@@ -99,6 +101,7 @@ function getOrder(){
                 if (noOfUnits > stock_quantity){
                    
                     console.log("Insufficient quantity!");
+                    getAllProducts();
                 }
 
                 var totalCost = parseFloat(answer.noOfUnits * unit_price);
@@ -108,11 +111,15 @@ function getOrder(){
                               (err,results)=>{
                                   if (err) throw err;
 
-                                  console.log("Total cost :" + totalCost.toFixed(2));
+                                  console.log("\nTotal cost :" + totalCost.toFixed(2)+"\n");
+
+                                  getAllProducts();
                               });
 
             });
             }
+
+            
 
         }
             )
