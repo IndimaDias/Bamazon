@@ -1,7 +1,11 @@
+// import npm inquirer package
 var inquire = require("inquirer");
+// import npm mysql package
 var mysql = require("mysql");
+// import npm cli-table package
 var Table = require("cli-table");
 
+// create connection to mysql database
 var connection = mysql.createConnection({
     host : "localhost",
     port : 3306,
@@ -10,17 +14,20 @@ var connection = mysql.createConnection({
     database : "bamazon"    
 });
 
+// ************************************function start************************************************
 function start(){
+    // when this function is called the application will connect to the database
     connection.connect(function(err) {
         if (err) throw err;
         console.log("connected as id " + connection.threadId + "\n");
+
+        // call getAllProducts to list data
         getAllProducts();
-        
-        // connection.end();
+                
        
       });
 
-}
+}// end function start 
 
 // **************************************function get all products**************************************
 // This function query all  products from the database and list as a table
@@ -46,8 +53,12 @@ function getAllProducts(){
         for(var i=0;i<results.length;i++){
             table.push([results[i].item_id,results[i].product_name,results[i].unit_price.toFixed(2),results[i].stock_quantity]);
         }
-        console.log(table.toString());        
+
+        // print table to the console
+        console.log(table.toString());
+        // print to additional lines
         console.log("\n\n");
+        // call function to get customer orders
         getOrder();
     });             
 } // end getAllProducts
@@ -56,10 +67,14 @@ function getAllProducts(){
 // ****************************************function prompt to order***************************************
 function getOrder(){
 
+    // This function requests order details from the user, using the npm inquirer package 
+    // variable to hold the item id
     var item_id = 0;
-    
+    // update query to update stock when order is placed
     var updateQuery = "UPDATE products SET stock_quantity = ? WHERE item_id = ?";
+    // variable to hold the unit price
     var unit_price = 0;
+    // 
     var stock_quantity = 0;
     var noOfUnits = 0;
     

@@ -46,7 +46,7 @@ function callMenu(){
                 // getAllProducts();
                 break;
             case "opt2" :
-                // checkLowInventory();
+                createDepartment();
                 break;            
             case "opt3":
                 connection.end();
@@ -56,5 +56,36 @@ function callMenu(){
 
     })
 }
+// ********************************function createDepartment*****************************************
 
+function createDepartment(){
+    var question = [{
+                    type :"input",
+                    name :"deptName",
+                    message : "Please enter the name of the Department"
+                    },
+                    {
+                     type : "input",
+                     name : "overheadCost",
+                     message : "Please enter the over head cost"   
+                    }
+    ];
+
+    inquirer.prompt(question)
+       .then(answer =>{
+
+         var department = {department_name : answer.deptName,
+                        over_head_cost : answer.overheadCost};
+
+         
+        connection.query("INSERT INTO departments SET ?" , department, (err,res)=>{
+            if (err) throw err;
+
+            console.log("\nNew Department created \n\n");
+
+            callMenu();
+        })                 
+    });
+}
+// ********************************************************************************************************
 start();
