@@ -191,8 +191,8 @@ function addNewProduct(){
                     },
                     {
                      type : "input",
-                     name : "department_name",
-                     message : "Please enter the department name"   
+                     name : "department_id",
+                     message : "Please enter the department id"   
                     },
                     {
                      type : "input",
@@ -210,9 +210,10 @@ function addNewProduct(){
        .then(answer =>{
 
          var product = {product_name : answer.productName,
-                        department_name : answer.department_name,
+                        department_id : answer.department_id,
                         unit_price : answer.unitPrice,
-                        stock_quantity : answer.quantity};
+                        stock_quantity : answer.quantity,
+                        product_sales : 0.00};
 
          
         connection.query("INSERT INTO products SET ?" , product, (err,res)=>{
