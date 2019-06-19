@@ -43,7 +43,7 @@ function callMenu(){
        
         switch (answers.optionMenu){
             case "opt1":
-                // getAllProducts();
+                    salesByDept();
                 break;
             case "opt2" :
                 createDepartment();
@@ -87,5 +87,39 @@ function createDepartment(){
         })                 
     });
 }
-// ********************************************************************************************************
+// ***********************************************function salesByDept*********************************************************
+function salesByDept(){
+    var querySales = "SELECT p.department_id, d.department_name, d.over_head_cost, SUM(p.product_sales) product_sales,"+
+                     "(product_sales - d.over_head_cost) totalProfit "+
+                     "FROM  products p, departments d " +
+                     "WHERE p.department_id = d.department_id " +
+                     "GROUP BY p.department_id";
+
+    // execute select query 
+    connection.query(querySales,function(err, results){
+        if(err) throw err;
+        // console.log(results);
+
+        // create a table with column headings, and column width
+        var table = new Table({
+            head: ['DEPARTMENT ID', 'NAME','OVER HEAD COST','PRODUCT SALES','TOTAL PROFIT']
+          , colWidths: [5,30,20,20,20]
+        });
+
+        // push query results to the table 
+        for(var i=0;i<results.length;i++){
+            table.push([results[i].department_id,results[i].department_name,
+                        results[i].over_head_cost.toFixed(2),results[i].product_sales.toFixed(2),
+                    results[i].totalProfit.toFixed(2)]);
+        }
+
+        // print table to the console
+        console.log(table.toString());
+        // print to additional lines
+        console.log("\n\n");
+      
+        callMenu();
+    });  
+}
+// *******************************************************************************************************
 start();

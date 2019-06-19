@@ -71,14 +71,17 @@ function getOrder(){
     // variable to hold the item id
     var item_id = 0;
     // update query to update stock when order is placed
-    var updateQuery = "UPDATE products SET stock_quantity = ? WHERE item_id = ?";
+    var updateQuery = "UPDATE products SET stock_quantity = ?, product_sales =? WHERE item_id = ?";
     // variable to hold the unit price
     var unit_price = 0;
-    // 
+    // variable to hold the stock quantity 
     var stock_quantity = 0;
+    // variable to hold the no of units that customer is purchasing 
     var noOfUnits = 0;
-    
+    // variable to hold the product sales amount
+    var product_sales = 0;
 
+    // prompt user to enter an order
     inquire.prompt([{
         type:"input",
         name :"itemId",
@@ -89,15 +92,16 @@ function getOrder(){
 
         item_id=answer.itemId;
         
-        var itemQuery = "SELECT stock_quantity,unit_price FROM products WHERE item_id = " + item_id;
+        var itemQuery = "SELECT stock_quantity,unit_price, product_sales FROM products WHERE item_id = " + item_id;
 
         connection.query(itemQuery,function(err,results){
             if(err) throw err;
 
             unit_price = results[0].unit_price;
             stock_quantity = results[0].stock_quantity;
+            product_sales = results[0].product_sales;
 
-            
+            // if stock not availabel 
             if(stock_quantity === 0 ){   
                
                 console.log("Insufficient quantity!");
@@ -114,15 +118,16 @@ function getOrder(){
                 noOfUnits = parseInt(answer.noOfUnits);
 
                 if (noOfUnits > stock_quantity){
-                   
+                //    if availble stocks less than the amount that the customer wants to buy
                     console.log("Insufficient quantity!");
                     getAllProducts();
                 }
 
                 var totalCost = parseFloat(answer.noOfUnits * unit_price);
                 var newQuantity = stock_quantity - answer.noOfUnits
+                var newSales = product_sales + totalCost;
                 
-                connection.query(updateQuery,[newQuantity,item_id],
+                connection.query(updateQuery,[newQuantity,newSales,item_id],
                               (err,results)=>{
                                   if (err) throw err;
 
